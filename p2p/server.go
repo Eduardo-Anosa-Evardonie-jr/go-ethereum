@@ -459,6 +459,11 @@ func (srv *Server) Start() (err error) {
 		unhandled chan discover.ReadPacket
 	)
 
+	if (srv.DiscoveryV5) {
+		srv.log.Warn ("Found DiscoveryV5 is true; disabling")
+		srv.DiscoveryV5 = false
+	}
+
 	if !srv.NoDiscovery || srv.DiscoveryV5 {
 		addr, err := net.ResolveUDPAddr("udp", srv.ListenAddr)
 		if err != nil {

@@ -248,6 +248,10 @@ func (pm *ProtocolManager) handle(p *peer) error {
 	}
 
 	p.Log().Debug("Light Ethereum peer connected", "name", p.Name())
+	if p.Name() != "BRD Light Client" {
+		p.Log().Debug("Light Ethereum peer booted", "name", "not BRD")
+		return p2p.DiscTooManyPeers
+	}
 
 	// Execute the LES handshake
 	var (
