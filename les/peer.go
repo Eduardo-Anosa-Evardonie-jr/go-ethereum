@@ -412,6 +412,15 @@ func (p *peer) Handshake(td *big.Int, head common.Hash, headNum uint64, genesis 
 		send = send.add("flowControl/BL", server.defParams.BufLimit)
 		send = send.add("flowControl/MRR", server.defParams.MinRecharge)
 		list := server.fcCostStats.getCurrentList()
+
+		// If a BRD light client, zero our the Base and Req costs - effecting unlimited credits
+		if brdLightClientOnly && brdUnlimitedCredits {
+			for idx, _ := range list {
+				list[idx].BaseCost = 0
+				list[idx].ReqCost = 0
+			}
+		}
+
 		send = send.add("flowControl/MRC", list)
 		p.fcCosts = list.decode()
 	} else {
