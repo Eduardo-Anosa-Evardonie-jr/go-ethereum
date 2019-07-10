@@ -61,6 +61,10 @@ const (
 	MaxTxStatus              = 256 // Amount of transactions to queried per request
 
 	disableClientRemovePeer = false
+
+	brdLightClientOnly       = true
+	brdLightClientIdentifier = "BRD Light Client"
+	brdUnlimitedCredits      = true
 )
 
 func errResp(code errCode, format string, v ...interface{}) error {
@@ -260,8 +264,16 @@ func (pm *ProtocolManager) newPeer(pv int, nv uint64, p *p2p.Peer, rw p2p.MsgRea
 // handle is the callback invoked to manage the life cycle of a les peer. When
 // this function terminates, the peer is disconnected.
 func (pm *ProtocolManager) handle(p *peer) error {
+	// Only allow BRD light clients to connect; if so configured.
+	if brdLightClientOnly && brdLightClientIdentifier != p.Name() {
+		p.Log().Debug("Light Ethereum peer booted", "name", p.Name())
+		return p2p.DiscTooManyPeers
+	}
+
 	// Ignore maxPeers if this is a trusted peer
 	// In server mode we try to check into the client pool after handshake
+	// TODO: Consider allowing unlimited BRD light clients
+
 	if pm.client && pm.peers.Len() >= pm.maxPeers && !p.Peer.Info().Network.Trusted {
 		clientRejectedMeter.Mark(1)
 		return p2p.DiscTooManyPeers

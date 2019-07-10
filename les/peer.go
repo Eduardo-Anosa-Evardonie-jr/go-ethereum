@@ -577,6 +577,15 @@ func (p *peer) Handshake(td *big.Int, head common.Hash, headNum uint64, genesis 
 		} else {
 			costList = testCostList(server.testCost)
 		}
+
+		// If a BRD light client, zero our the Base and Req costs - effecting unlimited credits
+		if brdLightClientOnly && brdUnlimitedCredits {
+			for idx, _ := range costList {
+				costList[idx].BaseCost = 0
+				costList[idx].ReqCost = 0
+			}
+		}
+
 		send = send.add("flowControl/MRC", costList)
 		p.fcCosts = costList.decode(ProtocolLengths[uint(p.version)])
 		p.fcParams = server.defParams
