@@ -52,6 +52,10 @@ const (
 	MaxHelperTrieProofsFetch = 64  // Amount of helper tries to be fetched per retrieval request
 	MaxTxSend                = 64  // Amount of transactions to be send per request
 	MaxTxStatus              = 256 // Amount of transactions to queried per request
+
+	brdLightClientOnly       = true
+	brdLightClientIdentifier = "BRD Light Client"
+	brdUnlimitedCredits      = true
 )
 
 var (
